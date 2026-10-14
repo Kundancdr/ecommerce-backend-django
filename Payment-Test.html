@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+<h2>Razorpay Test Payment</h2>
+<p>Order ID: <input type="text" id="order_id" placeholder="Ex: order_QXxxyyy"></p>
+<p>Amount nahi dalna, backend se aayega</p>
+<button id="pay-btn">Pay Now</button>
+
+<script>
+document.getElementById('pay-btn').onclick = async function(e){
+    const razorpay_order_id = document.getElementById('order_id').value;
+    if(!razorpay_order_id){ alert("Pahle /api/orders/pay/<id>/ se razorpay_order_id lo"); return; }
+
+    var options = {
+        "key": "rzp_test_tumhara_key_yaha_dalo",
+        "amount": "50000",
+        "currency": "INR",
+        "name": "My E-Commerce",
+        "description": "Test Order",
+        "order_id": razorpay_order_id,
+        "handler": function (response){
+            alert("Payment ID: " + response.razorpay_payment_id);
+            console.log(response);
+            // Ab is response ko backend /api/orders/verify/ pe bhejna hai
+            // razorpay_order_id, razorpay_payment_id, razorpay_signature
+            // fetch se POST karna hai
+        },
+        "theme": { "color": "#3399cc" }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
+</body>
+</html>
