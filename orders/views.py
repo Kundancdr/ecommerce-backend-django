@@ -6,10 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from cart.models import Cart
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
+from drf_spectacular.utils import extend_schema
 
 class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(tags=['Orders'], request=None, responses=OrderSerializer)
     def post(self, request):
         cart_items = Cart.objects.filter(user=request.user)
         if not cart_items.exists():
@@ -36,6 +38,7 @@ class CreateOrderView(APIView):
 class MyOrdersView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(tags=['Orders'], responses=OrderSerializer(many=True))
     def get(self, request):
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
         serializer = OrderSerializer(orders, many=True)
